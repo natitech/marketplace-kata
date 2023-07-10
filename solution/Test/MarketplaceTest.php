@@ -56,6 +56,14 @@ final class MarketplaceTest extends TestCase
     }
 
     #[Test]
+    public function whenAvailableProductThenSellerIsPaid()
+    {
+        $this->purchase();
+
+        $this->assertEquals(100, $this->bank->getTransferredTo($this->seller));
+    }
+
+    #[Test]
     public function missingProductThrowException()
     {
         $this->expectException(ProductNotAvailableException::class);
