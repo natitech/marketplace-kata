@@ -5,6 +5,7 @@ namespace Kata\Solution\Test;
 use Kata\External\Product;
 use Kata\External\ProductNotAvailableException;
 use Kata\External\User;
+use Kata\Solution\SafeBank;
 use Kata\Solution\Marketplace;
 use Kata\Solution\Purchase;
 use PHPUnit\Framework\Attributes\Test;
@@ -30,7 +31,7 @@ final class MarketplaceTest extends TestCase
 
         $this->bank        = new InMemoryBank();
         $this->inventory   = new InMemoryInventory();
-        $this->marketplace = (new Marketplace($this->bank, $this->inventory));
+        $this->marketplace = (new Marketplace(new SafeBank($this->bank), $this->inventory));
 
         $this->buyer   = new User('Alice');
         $this->seller  = new User('Bob');
