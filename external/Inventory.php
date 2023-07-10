@@ -1,5 +1,7 @@
 <?php
 
+namespace Kata\External;
+
 interface Inventory
 {
     /** @throws ProductNotAvailableException */
