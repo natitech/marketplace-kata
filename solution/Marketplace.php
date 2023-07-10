@@ -4,6 +4,7 @@ namespace Kata\Solution;
 
 use Kata\External\Bank;
 use Kata\External\Inventory;
+use Kata\External\Product;
 use Kata\External\Transfer;
 
 final readonly class Marketplace
@@ -14,16 +15,36 @@ final readonly class Marketplace
 
     public function purchase(Purchase $purchase)
     {
-        $this->bank->fromUserToPivot($purchase->buyer, new Transfer($purchase->product->price));
+        $this->prepay($purchase);
 
         try {
-            $this->inventory->removeProduct($purchase->product);
+            $this->moveProduct($purchase->product);
         } catch (\Exception $e) {
-            $this->bank->fromPivotToUser($purchase->buyer, new Transfer($purchase->product->price));
+            $this->refund($purchase);
 
             throw $e;
         }
 
+        $this->pay($purchase);
+    }
+
+    private function prepay(Purchase $purchase): void
+    {
+        $this->bank->fromUserToPivot($purchase->buyer, new Transfer($purchase->product->price));
+    }
+
+    private function moveProduct(Product $product): void
+    {
+        $this->inventory->removeProduct($product);
+    }
+
+    private function refund(Purchase $purchase): void
+    {
+        $this->bank->fromPivotToUser($purchase->buyer, new Transfer($purchase->product->price));
+    }
+
+    private function pay(Purchase $purchase): void
+    {
         $this->bank->fromPivotToUser($purchase->seller, new Transfer($purchase->product->price));
     }
 }
